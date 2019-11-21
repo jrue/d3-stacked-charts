@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Stacked Bar Chart</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type="text/css">
+    /* custom css styles will go here */
+
+    </style>
+</head>
+<body>
+  <script src="js/d3.v5.min.js"></script>
+  <script>
+
+    //set margins, width, height
+    var margin = {top:20, right:15, bottom:20, left:75},
+        width  = 800 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    //append responsive SVG
+    var svg = d3.select("body")
+      .append("svg")
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .attr("viewBox", "0 0 " + (width + margin.left + margin.right) + " " + (height + margin.top + margin.bottom));
+
+    //to adjust for margins, append a <g> which holds the chart
+    var chart = svg.append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+    //scales
+    var yScale = d3.scaleLinear()
+      .range([height, 0]);
+
+    var xScale = d3.scaleTime()
+      .range([0, width])
+      
+    //time scale by Year "%m-%d-%Y" is common american format
+    var parseTime = d3.timeParse("%Y");
+
+
+    d3.csv("gun-manufacturing.csv", function(data){
+
+      //convert to numbers (or time format in some cases)
+      for(prop in data){
+        if(prop != 'Year')
+          data[prop] = +data[prop];
+        else
+          data[prop] = parseTime(+data[prop]);
+      }
+
+      return data;
+
+
+    }).then(function(data){
+           
+      //every column will be a bar except first one
+      var keys = data.columns.slice(1); 
+
+
+      // set the colors
+      var colors = d3.scaleOrdinal()
+        .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"])
+        .domain(keys);
+     
+
+      //stack generator will stack the data based on the keys given
+      var stackedData = d3.stack()
+        .offset(d3.stackOffsetSilhouette)
+        .keys(keys)
+        (data);
+ 
+      //find the max value in the dataset
+      var maxValue = d3.max(stackedData[stackedData.length - 1], function(d){ return d[1]; });
+
+      yScale.domain([-maxValue, maxValue]);
+      xScale.domain(d3.extent(data.map(function(d){ return d["Year"]; })));
+
+      var area = d3.area()
+        .curve(d3.curveCardinal)
+        .x(function(d){ return xScale(d.data.Year); })
+        .y0(function(d){ return yScale(d[0]); })
+        .y1(function(d){ return yScale(d[1]); });
+
+
+      var areaChart = chart.selectAll("path.area")
+        .data(stackedData)
+        .enter()
+        .append("path")
+        .attr("fill", function(d){ return colors(d.key); })
+        .attr("d", area);
+
+    
+
+      //adding x axis to the bottom of chart
+      var yAxis = svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + (height + margin.top) + ")")
+        .call(d3.axisBottom(xScale));
+      
+      chart.append("g")
+        .attr("transform", "translate(" + (width/2) + ", 2)")
+        .append("text")
+        .text("Gun Purchases By Year")
+        .style("text-anchor", "middle")
+        .style("font-family", "Arial")
+        .style("font-weight", "800");
+
+
+      var legend = chart.append("g")
+        .attr("class", "legend")
+        .selectAll("g")
+        .data(keys.slice().reverse())
+        .enter()
+        .append("g")
+        .attr("transform", function(d,i){ return "translate(" + (width * .8) + "," + (i*17) +")"});
+
+
+      legend.append("circle")
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", 5)
+        .style("fill", function(d){ return colors(d);});
+
+
+      legend.append("text")
+        .attr("x", 10)
+        .attr("y", 1)
+        .text(function(d){ return d;})
+        .style("font-family", "sans-serif")
+        .style("font-size", "10px")
+        .style("alignment-baseline", "middle");
+
+
+    });
+  </script>
+</body>
+</html>
