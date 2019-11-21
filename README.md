@@ -8,15 +8,15 @@ This is a simple template for making a line chart in D3.
 
 **src/area-chart.html**
 
-<img src="https://raw.githubusercontent.com/jrue/d3-stacked-charts/master/screenshots/screenshot1.png" width="50%" height="auto" style="max-width:50%;height:auto;">
+<img src="https://raw.githubusercontent.com/jrue/d3-stacked-charts/master/screenshots/screenshot2.png" width="50%" height="auto" style="max-width:50%;height:auto;">
 
 **src/area-chart-fill.html**
 
-<img src="https://raw.githubusercontent.com/jrue/d3-stacked-charts/master/screenshots/screenshot1.png" width="50%" height="auto" style="max-width:50%;height:auto;">
+<img src="https://raw.githubusercontent.com/jrue/d3-stacked-charts/master/screenshots/screenshot3.png" width="50%" height="auto" style="max-width:50%;height:auto;">
 
 **src/stream-graph.html**
 
-<img src="https://raw.githubusercontent.com/jrue/d3-stacked-charts/master/screenshots/screenshot1.png" width="50%" height="auto" style="max-width:50%;height:auto;">
+<img src="https://raw.githubusercontent.com/jrue/d3-stacked-charts/master/screenshots/screenshot4.png" width="50%" height="auto" style="max-width:50%;height:auto;">
 
 ## Install instructions
 
